@@ -13,7 +13,7 @@ module.exports = (req, res, next) => {
                         message: 'Failed to authenticate token.'
                     });
                 } else {
-                    req.decode = decoded;
+                    req.decoded = decoded;
                     next();
                 }
             });

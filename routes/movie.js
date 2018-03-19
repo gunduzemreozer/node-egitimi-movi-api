@@ -5,6 +5,7 @@ const router = express.Router();
 const Movie = require('../models/Movie');
 
 router.get('/', (req, res, next) => {
+  console.log(req.decoded);
   Movie.find()
     .then(data => { res.json(data); })
     .catch(err => { res.json(err); });
