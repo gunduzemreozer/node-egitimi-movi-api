@@ -4,6 +4,8 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const jsend = require('jsend');
+const HttpStatus = require('http-status-codes');
 
 const index = require('./routes/index');
 const movie = require('./routes/movie');
@@ -32,6 +34,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(jsend.middleware);
 
 app.use('/', index);
 app.use('/api', verifyToken);
@@ -52,8 +55,8 @@ app.use((err, req, res, next) => {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   
   // render the error page
-  res.status(err.status || 500);
-  res.json({ error: { message: err.message, code: err.code }});
+  res.status(err.status || HttpStatus.INTERNAL_SERVER_ERROR);
+  res.jsend.error(err);
 });
 
 module.exports = app;

@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const HttpStatus = require('http-status-codes');
 
 const router = express.Router();
 
@@ -46,11 +47,8 @@ router.get('/', (req, res, next) => {
         }
     ]);
 
-    promise.then(data => {
-        res.json(data);
-    }).catch(err => {
-        res.json(err);
-    });
+    promise.then(directors => { res.jsend.success({ directors });})
+        .catch(err => { next(err); });
 });
 
 router.get('/:director_id', (req, res, next) => {
@@ -98,49 +96,47 @@ router.get('/:director_id', (req, res, next) => {
         }
     ]);
 
-    promise.then(data => {
-        res.json(data);
-    }).catch(err => {
-        res.json(err);
-    });
+    promise.then(directors => { 
+        if (directors.length === 1) {
+            res.jsend.success({ director: directors[0] });
+        } else {
+            next({ message: 'The director was not found', status: HttpStatus.NOT_FOUND });
+        }
+    }).catch(err => { next(err); });
 });
 
 router.post('/', (req, res, next) => {
     const director = new Director(req.body);
 
     director.save()
-        .then(data => {
-            res.json(data);
-        }).catch(err => {
-            res.json(err);
-        });
+        .then(director => { 
+            res.status(HttpStatus.CREATED)
+            .set('location', `/api/directors/${director._id}`)
+            .jsend.success({ director }); })
+        .catch(err => { next(err) });
 });
 
 router.put('/:director_id', (req, res, next) => {
     Director.findByIdAndUpdate(req.params.director_id, req.body, { new: true })
         .then(director => {
             if (!director) {
-                next({ message: 'The director was not found', code: 1 });
+                next({ message: 'The director was not found', status: HttpStatus.NOT_FOUND });
             }
             else {
-                res.json(director);
+                res.jsend.success({ director });
             }
-        }).catch(err => {
-            res.json(err);
-        });
+        }).catch(err => { next(err); });
 });
 
 router.delete('/:director_id', (req, res, next) => {
     Director.findByIdAndRemove(req.params.director_id)
         .then(director => {
             if (!director) {
-                next({ message: 'The director was not found', code: 1 });
+                next({ message: 'The director was not found', status: HttpStatus.NOT_FOUND });
             } else {
-                res.json(director);
+                res.jsend.success({ director });
             }
-        }).catch(err => {
-            res.json(err);
-        });
+        }).catch(err => { next(err); });
 });
 
 module.exports = router;

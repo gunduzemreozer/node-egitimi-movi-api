@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const HttpStatus = require('http-status-codes');
 
 const router = express.Router();
 
@@ -22,11 +23,8 @@ router.post('/register', (req, res, next) => {
     });
   
     user.save()
-      .then(data => {
-        res.json(data);
-      }).catch(err => {
-        res.json(err);
-      });
+      .then(user => { res.status(HttpStatus.CREATED).jsend.success({ user });})
+      .catch(err => { next(err); });
   });  
 });
 
@@ -36,13 +34,13 @@ router.post('/authenticate', (req, res, next) => {
   User.findOne({ username })
     .then(user => {
       if (!user) {
-        next({ message: 'Authentication failed, user not found!', code: 2 });
+        next({ message: 'Authentication failed, user not found!' });        
       }
       else {
         // Load hash from your password DB.
         bcrypt.compare(password, user.password).then(result => {
           if (!result) {
-            next({ message: 'Authentication failed, wrong password!', code: 3 });
+            next({ message: 'Authentication failed, wrong password!' });
           }
           else {
             const payload = {
@@ -56,15 +54,12 @@ router.post('/authenticate', (req, res, next) => {
               }
             );
 
-            res.json({
-              status: true,
-              token
-            });
+            res.jsend.success({ token });
           }
         });
       }
     }).catch(err => {
-      res.json(err);
+      next(err);
     });
 });
 
