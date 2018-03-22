@@ -34,7 +34,7 @@ router.post('/authenticate', (req, res, next) => {
   User.findOne({ username })
     .then(user => {
       if (!user) {
-        next({ message: 'Authentication failed, user not found!' });        
+        next({ message: 'Authentication failed, user not found!', status: HttpStatus.NOT_FOUND });        
       }
       else {
         // Load hash from your password DB.
@@ -50,7 +50,7 @@ router.post('/authenticate', (req, res, next) => {
             const token = jwt.sign(payload, 
               req.app.get('api_secret_key'), 
               {
-                expiresIn: 720 //12 saat
+                expiresIn: "1h"
               }
             );
 
