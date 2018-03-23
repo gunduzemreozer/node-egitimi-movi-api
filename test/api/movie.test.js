@@ -61,7 +61,7 @@ describe('/api/movies tests', () => {
         it('it should GET all the movies', done => {
             chai.request(server)
                 .get('/api/movies')
-                .set('authorization', 'token')
+                .set('authorization', token)
                 .end((err, res) => {
                     should.not.exist(err);
 
