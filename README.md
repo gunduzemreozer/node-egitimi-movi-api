@@ -1,3 +1,5 @@
+[![Build status](https://api.travis-ci.org/gunduzemreozer/node-egitimi-movi-api.svg)](https://travis-ci.org/gunduzemreozer/node-egitimi-movi-api/)
+
 # node-egitimi-movi-api
 Node JS Eğitim Seti - Movie API
 
